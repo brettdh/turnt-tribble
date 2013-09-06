@@ -1,0 +1,18 @@
+CXXFLAGS = -Wall -g -pthread --std=c++11
+
+all: pimpl_demo
+
+pimpl_demo: foo.o fooImpl.o main.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+foo.o: foo.cpp foo.h fooImpl.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+fooImpl.o: fooImpl.cpp fooImpl.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+main.o: main.cpp foo.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+clean:
+	rm *.o pimpl_demo

@@ -1,0 +1,25 @@
+I talked a bit in discussion about the pitfalls of using a Makefile
+to separate compilation from linking. This is required to get one of 
+the benefits of the pimpl/compiler firewall idiom - namely, that you
+only need to rebuild the implementation, and not the client code that 
+only uses the public interface, when the implementation changes.
+
+The pitfall is that, if you don't set up your dependencies correctly
+and thoroughly in the Makefile, you can have stale object files.
+In discussion, I demonstrated how changing the size of the impl
+class can result in a segfault from the calling code, because the 
+foo.o file was not rebuilt after the fooImpl.h header file changed.
+
+Thus, the updated Makefile includes g++'s automatic dependency
+generation.  By adding the -MMD flag when you compile your object
+files, you cause g++ to generate a dependency file, ending with ".d".
+This file contains Makefile rules that include all the header files in
+the given source file.  You then include all those files in the next
+line, and make picks up those rules on its next invocation.  (Make
+sure to 'make clean' any time you change your Makefile.)
+
+This is the general method I would recommend, short of using a Makefile
+generator like Premake, CMake, Autotools, etc.  Alternatively, you 
+can specify all dependencies explicitly, as in Makefile.manualdeps,
+but this means that you'll need to update them when you change
+the includes in your source files.
