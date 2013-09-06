@@ -1,4 +1,3 @@
-CXX = g++
 CXXFLAGS = -Wall -g -pthread --std=c++11
 
 all: pimpl_demo
