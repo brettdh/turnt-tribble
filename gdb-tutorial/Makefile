@@ -1,6 +1,10 @@
-CXXFLAGS = -Wall -g -pthread --std=c++11
+CXXFLAGS = -Wall -g -pthread -ldl --std=c++11
+LDFLAGS = libcpu.a -ldl -pthread 
 
-all: gdb_demo
+all: gdb_demo handout
+
+handout: handout.o thread.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 gdb_demo: parent.o child.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -9,4 +13,4 @@ gdb_demo: parent.o child.o
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm *.o gdb_demo
+	rm -f parent.o child.o handout.o gdb_demo handout
