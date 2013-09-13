@@ -6,13 +6,16 @@ using namespace std;
 mutex mutex1;
 cv cv1;
 
-int child_done = 0;		// global variable; shared between the two threads.
+// global variable; shared between the two threads.
+int child_done = 0;
 
 void child(void *a)
 {
     char *message = (char *) a;
     mutex1.lock();
-    cout << "child run with message " << message << ", setting child_done = 1\n";
+    cout << "child run with message " << message
+         << ", setting child_done = 1\n";
+    
     child_done = 1;
     cv1.signal();
     mutex1.unlock();
@@ -21,8 +24,10 @@ void child(void *a)
 void parent(void *a)
 {
     intptr_t arg = (intptr_t) a;
-    cout << "parent called with arg " << arg << endl;
-    thread t1 ((thread_startfunc_t) child, (void *) "test message");
+    cout << "parent called with arg " 
+         << arg << endl;
+    thread t1 ((thread_startfunc_t) child, 
+               (void *) "test message");
     mutex1.lock();
     while (!child_done) {
         cout << "parent waiting for child to run\n";
@@ -34,5 +39,6 @@ void parent(void *a)
 
 int main()
 {
-    cpu::boot((thread_startfunc_t) parent, (void *) 100, 0);
+    cpu::boot((thread_startfunc_t) parent,
+              (void *) 100, 0);
 }
